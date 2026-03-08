@@ -163,8 +163,8 @@ int main(int argc, const char * argv[])
     fillScreen(FILL_SCREEN_COLOR);
 #ifndef PC
     // Let user know that program has not crashed and we are loading model
-    DebugSetCursorPosition(1,1);
-    DebugPrintString("Load obj");
+    Debug_SetCursorPosition(1,1);
+    Debug_PrintString("Load obj", false);
     LCD_Refresh();
 #endif
 
@@ -261,6 +261,7 @@ int main(int argc, const char * argv[])
                         case KEYCODE_UP: key_w = true; break;
                         case KEYCODE_DOWN: key_s = true; break;
                         case KEYCODE_POWER_CLEAR: key_ESCAPE = true; break;
+                        default: break;
                     }
                 } else if (event.data.key.direction == KEY_RELEASED) {
                     switch(event.data.key.keyCode) {
@@ -278,6 +279,7 @@ int main(int argc, const char * argv[])
                         case KEYCODE_UP: key_w = false; break;
                         case KEYCODE_DOWN: key_s = false; break;
                         case KEYCODE_POWER_CLEAR: key_ESCAPE = false; break;
+                        default: break;
                     }
                 }
             }

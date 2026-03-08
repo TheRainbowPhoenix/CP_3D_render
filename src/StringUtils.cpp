@@ -92,7 +92,7 @@ bool read_until(FILE* fd, char* buf, int buf_size, char target, bool include_tar
         }
         int rd_bytes = fread(buf, 1, READ_CHUNK_SIZE, fd);
 #ifndef PC
-        // DebugPrintf(1,8, false, 0, "rd_byte: %d", rd_bytes);
+        // Debug_Printf(1,8, false, 0, "rd_byte: %d", rd_bytes);
         LCD_Refresh();
 #endif
         // Check if end of file was reached
@@ -139,7 +139,7 @@ bool read_line(FILE* fd, char* buf, int buf_size)
     // Reached end (no more new lines). Just read the rest of the line normally
     int last_read = fread(buf, 1, buf_size, fd);
     #ifndef PC
-        // DebugPrintf(1,7, false, 0, "last_read: %d", last_read);
+        // Debug_Printf(1,7, false, 0, "last_read: %d", last_read);
         LCD_Refresh();
     #endif
     if (last_read > 0){
