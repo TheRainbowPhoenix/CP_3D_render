@@ -1,4 +1,4 @@
-#include "Fix16_Utils.hpp"
+#include "Fix16_Utils.h"
 
 Fix16 calculateDistance(const fix16_vec3& v1, const fix16_vec3& v2) {
     Fix16 dx = v2.x - v1.x;

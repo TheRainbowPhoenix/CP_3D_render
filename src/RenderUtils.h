@@ -3,10 +3,10 @@
 #include "libfixmath/fix16.hpp"
 
 // TODO: Only needed for structs fix16_vec3. Move these somewhere else...
-#include "RenderFP3D.hpp"
+#include "RenderFP3D.h"
 
 // color_t
-#include "Renderer.hpp"
+#include "Renderer.h"
 
 Fix16 calculateLightIntensity(const fix16_vec3& lightPos, const fix16_vec3& surfacePos, const fix16_vec3& normal, Fix16 lightIntensity);
 

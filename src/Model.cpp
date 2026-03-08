@@ -1,14 +1,14 @@
-#include "Model.hpp"
+#include "Model.h"
 
-#include "StringUtils.hpp"
+#include "StringUtils.h"
 
-#include "constants.hpp"
+#include "constants.h"
 
 #ifndef PC
-#   include <sdk/os/file.hpp>
-#   include <sdk/os/mem.hpp>
-#   include <sdk/os/debug.hpp>
-#   include <sdk/os/lcd.hpp>
+#   include <sdk/os/file.h>
+#   include <string.h>
+#   include <sdk/os/debug.h>
+#   include <sdk/os/lcd.h>
 #else
 #   include <SDL2/SDL.h>
 #   include <iostream>
@@ -31,8 +31,8 @@ Model::~Model()
 }
 
 Model::Model(
-    char* fname,
-    char* ftexture,
+    const char* fname,
+    const char* ftexture,
     bool centerVertices
 ) : loaded_from_file(false),
     position({0.0f, 0.0f, 0.0f}), rotation({0.0f, 0.0f}), scale({1.0f,1.0f,1.0f}),
@@ -123,14 +123,18 @@ void Model::_scaleModelTo(Fix16 maxWidth)
 }
 
 // Scale raw model vertices
-bool Model::load_from_binary_obj_file(char* fname, char* ftexture, bool center)
+bool Model::load_from_binary_obj_file(const char* fname, const char* ftexture, bool center)
 {
     // ~~~~~~~~~~~~~~~~~~~~~ Object ~~~~~~~~~~~~~~~~~~~~~
 
-    int fd = open(fname, UNIVERSIAL_FILE_READ );
+    #ifdef PC
+    FILE *fd = fopen(fname, "rb");
+#else
+    FILE *fd = fopen((const char*)fname, "rb");
+#endif
     char buff[32] = {0};
 
-    read(fd, buff, 31);
+    fread(buff, 1, 31, fd);
     uint32_t vert_count = *((uint32_t*)(buff+0));
     uint32_t face_count = *((uint32_t*)(buff+4));
     uint32_t uvface_count  = *((uint32_t*)(buff+8));
@@ -154,27 +158,27 @@ bool Model::load_from_binary_obj_file(char* fname, char* ftexture, bool center)
     unsigned lseek_uvcoord_start = lseek_uvface_end;
 
     // Read binary to vertices
-    lseek(fd, lseek_vert_start, SEEK_SET);
+    fseek(fd, lseek_vert_start, SEEK_SET);
     this->vertices = (fix16_vec3*) malloc(sizeof(fix16_vec3) * this->vertex_count);
-    read(fd, this->vertices, vert_count*3*4);   // vert_count(?x) * x,y,z(3x) * 32b Fix16 (4bytes)
+    fread(this->vertices, 1, vert_count*3*4, fd);   // vert_count(?x) * x,y,z(3x) * 32b Fix16 (4bytes)
 
     // Read binary to faces
-    lseek(fd, lseek_face_start, SEEK_SET);
+    fseek(fd, lseek_face_start, SEEK_SET);
     this->faces    = (u_triple*)   malloc(sizeof(u_triple)   * this->faces_count);
-    read(fd, this->faces, face_count*3*4);      // face_count(?x) * v0 v1 v2 (3x) * 32b unsigned (4bytes)
+    fread(this->faces, 1, face_count*3*4, fd);      // face_count(?x) * v0 v1 v2 (3x) * 32b unsigned (4bytes)
 
     // Read binary to uv faces
-    lseek(fd, lseek_uvface_start, SEEK_SET);
+    fseek(fd, lseek_uvface_start, SEEK_SET);
     this->uv_faces = (u_triple*)   malloc(sizeof(u_triple)   * this->uv_face_count);
-    read(fd, this->uv_faces, uvface_count*3*4); // uv_face_count(?x) * v0 v1 v2 (3x) * 32b unsigned (4bytes)
+    fread(this->uv_faces, 1, uvface_count*3*4, fd); // uv_face_count(?x) * v0 v1 v2 (3x) * 32b unsigned (4bytes)
 
     // Read binary to uv coords
-    lseek(fd, lseek_uvcoord_start, SEEK_SET);
+    fseek(fd, lseek_uvcoord_start, SEEK_SET);
     this->uv_coords = (fix16_vec2*) malloc(sizeof(fix16_vec2) * this->uv_coord_count);
-    read(fd, this->uv_coords, uv_coord_count*2*4);   // uv_coord_count(?x) * u,v(2x) * 32b Fix16 (4bytes)
+    fread(this->uv_coords, 1, uv_coord_count*2*4, fd);   // uv_coord_count(?x) * u,v(2x) * 32b Fix16 (4bytes)
 
     // File has been completely read
-    close(fd);
+    fclose(fd);
 
     // Center model
     if(center)
@@ -199,9 +203,13 @@ bool Model::load_from_binary_obj_file(char* fname, char* ftexture, bool center)
     }
 
     // Now load
-    fd = open(ftexture, UNIVERSIAL_FILE_READ);
+    #ifdef PC
+        fd = fopen(ftexture, "rb");
+#else
+        fd = fopen((const char*)ftexture, "rb");
+#endif
     memset(buff, 0, 32);
-    read(fd, buff, 31);
+    fread(buff, 1, 31, fd);
     uint32_t tex_size_x = *((uint32_t*)(buff+0));
     uint32_t tex_size_y = *((uint32_t*)(buff+4));
 
@@ -218,11 +226,11 @@ bool Model::load_from_binary_obj_file(char* fname, char* ftexture, bool center)
                  << std::endl;
 #endif
     // Read binary to textuer
-    lseek(fd, lseek_texture_start, SEEK_SET);
+    fseek(fd, lseek_texture_start, SEEK_SET);
     this->gen_uv_tex = (uint32_t*) malloc(sizeof(uint32_t) * tex_size_x*tex_size_y);
-    read(fd, this->gen_uv_tex, tex_size_x*tex_size_y*4);   // tex_size_x*tex_size_y(?x) * 32b Fix16 (4bytes)
+    fread(this->gen_uv_tex, 1, tex_size_x*tex_size_y*4, fd);   // tex_size_x*tex_size_y(?x) * 32b Fix16 (4bytes)
 
-    close(fd);
+    fclose(fd);
 
     return true;
 }

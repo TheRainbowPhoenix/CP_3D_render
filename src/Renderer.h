@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Model.hpp"
+#include "Model.h"
 
-#include "DynamicArray.hpp"
+#include "DynamicArray.h"
 
-#include "Pair.hpp"
+#include "Pair.h"
 
 #define _NO_TEXTURE_IMPL    (char*)NO_TEXTURE_PATH
 #define NO_TEXTURE          _NO_TEXTURE_IMPL
@@ -42,7 +42,7 @@ public:
 
     DynamicArray<Pair<Model*, Fix16>>& getModelArray();
     // If model has no texture, set as NO_TEXTURE
-    Model* addModel(char* model_path, char* texture_path, bool centerVertices=true);
+    Model* addModel(const char* model_path, const char* texture_path, bool centerVertices=true);
     unsigned int getModelCount();
 
     void update(int16_t_vec2* bbox_max, int16_t_vec2* bbox_min);

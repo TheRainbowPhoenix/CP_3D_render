@@ -1,21 +1,22 @@
-#include "Renderer.hpp"
+#include "Renderer.h"
+#include <stdlib.h>
 
-#include "Utils.hpp"
+#include "Utils.h"
 
-#include "constants.hpp"
+#include "constants.h"
 
-#include "Pair.hpp"
+#include "Pair.h"
 
-#include "Fix16_Utils.hpp"
+#include "Fix16_Utils.h"
 
-#include "RenderUtils.hpp"
+#include "RenderUtils.h"
 
 #ifndef PC
-#   include <sdk/os/lcd.hpp>
-#   include <sdk/calc/calc.hpp>
-#   include <sdk/os/input.hpp>
+#   include <sdk/os/lcd.h>
+#   include <sdk/calc/calc.h>
+#   include <sdk/os/input.h>
 #else
-#   include "PC_SDL_screen.hpp" // replaces "sdk/os/lcd.hpp"
+#   include "PC_SDL_screen.h" // replaces "sdk/os/lcd.h"
 #endif
 
 Renderer::Renderer()
@@ -43,7 +44,7 @@ DynamicArray<Pair<Model*, Fix16>>& Renderer::getModelArray()
 }
 
 // If model has no texture, set it as NO_TEXTURE
-Model* Renderer::addModel(char* model_path, char* texture_path, bool centerVertices)
+Model* Renderer::addModel(const char* model_path, const char* texture_path, bool centerVertices)
 {
     // Create new object
     auto m = new Model(model_path, texture_path, centerVertices);

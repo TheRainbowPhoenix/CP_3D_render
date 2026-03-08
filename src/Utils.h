@@ -1,5 +1,5 @@
 #pragma once
-#include "RenderFP3D.hpp"
+#include "RenderFP3D.h"
 
 template <class T>
 inline void swap(T& a, T& b) {

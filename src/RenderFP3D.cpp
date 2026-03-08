@@ -1,6 +1,6 @@
-#include "RenderFP3D.hpp"
+#include "RenderFP3D.h"
 
-#include "constants.hpp"
+#include "constants.h"
 
 #ifdef PC
 #   include <iostream>

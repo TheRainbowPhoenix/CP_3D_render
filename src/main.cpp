@@ -1,29 +1,29 @@
 
 #include "libfixmath/fix16.hpp"
 
-#include "RenderFP3D.hpp"
+#include "RenderFP3D.h"
 
-#include "constants.hpp"
+#include "constants.h"
 
-#include "Model.hpp"
+#include "Model.h"
 
-#include "StringUtils.hpp"
+#include "StringUtils.h"
 
-#include "Utils.hpp"
+#include "Utils.h"
 
-#include "Renderer.hpp"
+#include "Renderer.h"
 
-#include "DynamicArray.hpp"
+#include "DynamicArray.h"
 
 #ifndef PC
-#   include "app_description.hpp"
-#   include <sdk/calc/calc.hpp>
-#   include <sdk/os/input.hpp>
-#   include <sdk/os/lcd.hpp>
-#   include <sdk/os/debug.hpp>
-#   include <sdk/os/mem.hpp>
-#   include <sdk/os/file.hpp>
-#   include "fps_functions.hpp"
+#   include "app_description.h"
+#   include <sdk/calc/calc.h>
+#   include <sdk/os/input.h>
+#   include <sdk/os/lcd.h>
+#   include <sdk/os/debug.h>
+#   include <string.h>
+#   include <sdk/os/file.h>
+#   include "fps_functions.h"
 #else
     // SDL2 as our graphics library
 #   include <SDL2/SDL.h>
@@ -31,46 +31,29 @@
     // These functions are pretty much 1-to-1 copied from hollyhock2
     // sdk but instead of drawing to calculator screen (vram)
     // it draws to SDL2 screen (texture).
-#   include "PC_SDL_screen.hpp" // replaces "sdk/os/lcd.hpp"
+#   include "PC_SDL_screen.h" // replaces "sdk/os/lcd.h"
 #   include <iostream>  // std::string
 #   include <unistd.h>  // File open & close
 #   include <fcntl.h>   // File open & close
 #endif
 
 // Keymappings, both ClassPad and SDL2
-#ifndef PC
-#   define KEY_MOVE_LEFT       testKey(k1,k2,KEY_4)
-#   define KEY_MOVE_RIGHT      testKey(k1,k2,KEY_6)
-#   define KEY_MOVE_FORWARD    testKey(k1,k2,KEY_8)
-#   define KEY_MOVE_BACKWARD   testKey(k1,k2,KEY_2)
-#   define KEY_MOVE_UP         testKey(k1,k2,KEY_9)
-#   define KEY_MOVE_DOWN       testKey(k1,k2,KEY_3)
-#   define KEY_MOVE_FOV_ADD    testKey(k1,k2,KEY_ADD)
-#   define KEY_MOVE_FOV_SUB    testKey(k1,k2,KEY_SUBTRACT)
-#   define KEY_MOVE_REND_MODE  testKey(k1,k2,KEY_0)
-#   define KEY_ROTATE_LEFT     testKey(k1,k2,KEY_LEFT)
-#   define KEY_ROTATE_RIGHT    testKey(k1,k2,KEY_RIGHT)
-#   define KEY_ROTATE_UP       testKey(k1,k2,KEY_UP)
-#   define KEY_ROTATE_DOWN     testKey(k1,k2,KEY_DOWN)
-#   define KEY_QUIT            testKey(k1,k2,KEY_CLEAR)
-#else
-#   define KEY_MOVE_LEFT       key_left
-#   define KEY_MOVE_RIGHT      key_right
-#   define KEY_MOVE_FORWARD    key_up
-#   define KEY_MOVE_BACKWARD   key_down
-#   define KEY_MOVE_UP         key_r
-#   define KEY_MOVE_DOWN       key_f
-#   define KEY_MOVE_FOV_ADD    key_1
-#   define KEY_MOVE_FOV_SUB    key_2
-#   define KEY_MOVE_REND_MODE  key_e
-#   define KEY_ROTATE_LEFT     key_a
-#   define KEY_ROTATE_RIGHT    key_d
-#   define KEY_ROTATE_UP       key_w
-#   define KEY_ROTATE_DOWN     key_s
-#   define KEY_QUIT            key_ESCAPE
-#endif
+#define KEY_MOVE_LEFT       key_left
+#define KEY_MOVE_RIGHT      key_right
+#define KEY_MOVE_FORWARD    key_up
+#define KEY_MOVE_BACKWARD   key_down
+#define KEY_MOVE_UP         key_r
+#define KEY_MOVE_DOWN       key_f
+#define KEY_MOVE_FOV_ADD    key_1
+#define KEY_MOVE_FOV_SUB    key_2
+#define KEY_MOVE_REND_MODE  key_e
+#define KEY_ROTATE_LEFT     key_a
+#define KEY_ROTATE_RIGHT    key_d
+#define KEY_ROTATE_UP       key_w
+#define KEY_ROTATE_DOWN     key_s
+#define KEY_QUIT            key_ESCAPE
 
-#include "DynamicArray.hpp"  // Include the source file
+#include "DynamicArray.h"  // Include the source file
 
 bool DEBUG_TEST()
 {
@@ -81,7 +64,7 @@ bool DEBUG_TEST()
 }
 
 #ifndef PC
-// fps10 from "fps_functions.hpp" in calculator case
+// fps10 from "fps_functions.h" in calculator case
 extern int fps10;
 #endif
 
@@ -131,10 +114,13 @@ int custom_init(SDL_Window **window, SDL_Renderer **sdl_renderer, SDL_Texture **
 #endif
 
 #ifndef PC
-extern "C" void main()
+int main(int argc, char **argv, char **envp)
 {
+    (void)argc;
+    (void)argv;
+    (void)envp;
     int init_status = custom_init();
-    if (init_status != 0) return;
+    if (init_status != 0) return -1;
 #else // ifdef PC
 int main(int argc, const char * argv[])
 {
@@ -145,6 +131,7 @@ int main(int argc, const char * argv[])
 
     int init_status = custom_init(&window, &sdl_renderer, &texture);
     if (init_status != 0) return init_status;
+#endif // PC
 
     bool key_left = false;
     bool key_right = false;
@@ -160,28 +147,17 @@ int main(int argc, const char * argv[])
     bool key_d = false;
     bool key_e = false;
     bool key_ESCAPE = false;
-#endif // PC
+
     bool KEY_RENDER_MODE_prev = false; // De-bouncing the button
 
-    char model1_path[] =
 #ifdef PC
-        "./3D_Converted_Models/little_endian_pika.pkObj";
+    const char *model1_path = "./3D_Converted_Models/little_endian_pika.pkObj";
+    const char *model1_texture_path = "./3D_Converted_Models/little_endian_pika.texture";
+    const char *model2_path = "./3D_Converted_Models/little_endian_cube.pkObj";
 #else
-        "\\fls0\\big_endian_pika.pkObj";
-#endif
-
-    char model1_texture_path[] =
-#ifdef PC
-        "./3D_Converted_Models/little_endian_pika.texture";
-#else
-        "\\fls0\\big_endian_pika.texture";
-#endif
-
-    char model2_path[] =
-#ifdef PC
-        "./3D_Converted_Models/little_endian_cube.pkObj";
-#else
-        "\\fls0\\big_endian_cube.pkObj";
+    const char *model1_path = "/usr/fls0/big_endian_pika.pkObj";
+    const char *model1_texture_path = "/usr/fls0/big_endian_pika.texture";
+    const char *model2_path = "/usr/fls0/big_endian_cube.pkObj";
 #endif
 
     fillScreen(FILL_SCREEN_COLOR);
@@ -266,8 +242,48 @@ int main(int argc, const char * argv[])
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #ifndef PC
-        // ClassPad keypresses are stored in k1 and k2 in bits
-        uint32_t k1,k2; getKey(&k1,&k2);
+        struct Input_Event event __attribute__((aligned(4)));
+        while(GetInput(&event, 0, 0x10) == 0) {
+            if (event.type == EVENT_KEY) {
+                if (event.data.key.direction == KEY_PRESSED) {
+                    switch(event.data.key.keyCode) {
+                        case KEYCODE_4: key_left = true; break;
+                        case KEYCODE_6: key_right = true; break;
+                        case KEYCODE_8: key_up = true; break;
+                        case KEYCODE_2: key_down = true; break;
+                        case KEYCODE_9: key_r = true; break;
+                        case KEYCODE_3: key_f = true; break;
+                        case KEYCODE_PLUS: key_1 = true; break;
+                        case KEYCODE_MINUS: key_2 = true; break;
+                        case KEYCODE_0: key_e = true; break;
+                        case KEYCODE_LEFT: key_a = true; break;
+                        case KEYCODE_RIGHT: key_d = true; break;
+                        case KEYCODE_UP: key_w = true; break;
+                        case KEYCODE_DOWN: key_s = true; break;
+                        case KEYCODE_POWER_CLEAR: key_ESCAPE = true; break;
+                        default: break;
+                    }
+                } else if (event.data.key.direction == KEY_RELEASED) {
+                    switch(event.data.key.keyCode) {
+                        case KEYCODE_4: key_left = false; break;
+                        case KEYCODE_6: key_right = false; break;
+                        case KEYCODE_8: key_up = false; break;
+                        case KEYCODE_2: key_down = false; break;
+                        case KEYCODE_9: key_r = false; break;
+                        case KEYCODE_3: key_f = false; break;
+                        case KEYCODE_PLUS: key_1 = false; break;
+                        case KEYCODE_MINUS: key_2 = false; break;
+                        case KEYCODE_0: key_e = false; break;
+                        case KEYCODE_LEFT: key_a = false; break;
+                        case KEYCODE_RIGHT: key_d = false; break;
+                        case KEYCODE_UP: key_w = false; break;
+                        case KEYCODE_DOWN: key_s = false; break;
+                        case KEYCODE_POWER_CLEAR: key_ESCAPE = false; break;
+                        default: break;
+                    }
+                }
+            }
+        }
 #else // !PC -> PC
         // Get the next event
         SDL_Event event;
@@ -327,11 +343,7 @@ int main(int argc, const char * argv[])
 // ~~~~~~~~~~~~~~~~~~~~ Key Presses ~~~~~~~~~~~~~~~~~~~~
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PC
-    // Only poll Calculator when any key was pressed
-    if (Input_IsAnyKeyDown())
-    {
-#endif
+
         if (KEY_QUIT)
             done = true;
 
@@ -391,12 +403,7 @@ int main(int argc, const char * argv[])
         if(KEY_ROTATE_DOWN)
             renderer.get_camera_rot().y += last_dt * CAMERA_SPEED;
 
-#ifndef PC
-    } // Input_IsAnyKeyDown()
-    else {
-        KEY_RENDER_MODE_prev = false;
-    }
-#endif
+
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // ~~~~~~~~~~~~~~~~~~~~~ Main Loop ~~~~~~~~~~~~~~~~~~~~~
@@ -425,7 +432,7 @@ int main(int argc, const char * argv[])
 
 #ifndef PC
         // Note that this is directly yanked from <insert_someones_git_and_name>.
-        // The whole "fps_functions.hpp" is taken.
+        // The whole "fps_functions.h" is taken.
         // I have not written FPS calculation functionality.
         fps_formatted_update();
         fps_display();
@@ -477,7 +484,7 @@ int main(int argc, const char * argv[])
 #ifdef PC
                 setPixel_Unsafe(x,y, FILL_SCREEN_COLOR);
 #else
-                vram[width*y + x] = FILL_SCREEN_COLOR;
+                LCD_GetVRAMAddress()[SCREEN_X*y + x] = FILL_SCREEN_COLOR;
 #endif
             }
         }
@@ -488,7 +495,7 @@ int main(int argc, const char * argv[])
 #ifdef PC
                 setPixel_Unsafe(x,y, FILL_SCREEN_COLOR);
 #else
-                vram[width*y + x] = FILL_SCREEN_COLOR;
+                LCD_GetVRAMAddress()[SCREEN_X*y + x] = FILL_SCREEN_COLOR;
 #endif
             }
         }
@@ -513,7 +520,8 @@ int main(int argc, const char * argv[])
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #ifndef PC
-    calcEnd(); //restore screen and do stuff
+
+    return 0;
 #else
     // End program without leaking memory
     delete[] screenPixels;
