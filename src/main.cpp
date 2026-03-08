@@ -163,8 +163,8 @@ int main(int argc, const char * argv[])
     fillScreen(FILL_SCREEN_COLOR);
 #ifndef PC
     // Let user know that program has not crashed and we are loading model
-    Debug_SetCursorPosition(1,1);
-    Debug_PrintString("Load obj", false);
+    DebugSetCursorPosition(1,1);
+    DebugPrintString("Load obj");
     LCD_Refresh();
 #endif
 
@@ -244,39 +244,41 @@ int main(int argc, const char * argv[])
 #ifndef PC
         struct Input_Event event __attribute__((aligned(4)));
         while(GetInput(&event, 0, 0x10) == 0) {
-            if (event.type == Input_EventType_KeyDown) {
-                switch(event.data.keydown.scancode) {
-                    case KEYCODE_4: key_left = true; break;
-                    case KEYCODE_6: key_right = true; break;
-                    case KEYCODE_8: key_up = true; break;
-                    case KEYCODE_2: key_down = true; break;
-                    case KEYCODE_9: key_r = true; break;
-                    case KEYCODE_3: key_f = true; break;
-                    case KEYCODE_PLUS: key_1 = true; break;
-                    case KEYCODE_MINUS: key_2 = true; break;
-                    case KEYCODE_0: key_e = true; break;
-                    case KEYCODE_LEFT: key_a = true; break;
-                    case KEYCODE_RIGHT: key_d = true; break;
-                    case KEYCODE_UP: key_w = true; break;
-                    case KEYCODE_DOWN: key_s = true; break;
-                    case KEYCODE_POWER_CLEAR: key_ESCAPE = true; break;
-                }
-            } else if (event.type == Input_EventType_KeyUp) {
-                switch(event.data.keydown.scancode) {
-                    case KEYCODE_4: key_left = false; break;
-                    case KEYCODE_6: key_right = false; break;
-                    case KEYCODE_8: key_up = false; break;
-                    case KEYCODE_2: key_down = false; break;
-                    case KEYCODE_9: key_r = false; break;
-                    case KEYCODE_3: key_f = false; break;
-                    case KEYCODE_PLUS: key_1 = false; break;
-                    case KEYCODE_MINUS: key_2 = false; break;
-                    case KEYCODE_0: key_e = false; break;
-                    case KEYCODE_LEFT: key_a = false; break;
-                    case KEYCODE_RIGHT: key_d = false; break;
-                    case KEYCODE_UP: key_w = false; break;
-                    case KEYCODE_DOWN: key_s = false; break;
-                    case KEYCODE_POWER_CLEAR: key_ESCAPE = false; break;
+            if (event.type == EVENT_KEY) {
+                if (event.data.key.direction == KEY_PRESSED) {
+                    switch(event.data.key.keyCode) {
+                        case KEYCODE_4: key_left = true; break;
+                        case KEYCODE_6: key_right = true; break;
+                        case KEYCODE_8: key_up = true; break;
+                        case KEYCODE_2: key_down = true; break;
+                        case KEYCODE_9: key_r = true; break;
+                        case KEYCODE_3: key_f = true; break;
+                        case KEYCODE_PLUS: key_1 = true; break;
+                        case KEYCODE_MINUS: key_2 = true; break;
+                        case KEYCODE_0: key_e = true; break;
+                        case KEYCODE_LEFT: key_a = true; break;
+                        case KEYCODE_RIGHT: key_d = true; break;
+                        case KEYCODE_UP: key_w = true; break;
+                        case KEYCODE_DOWN: key_s = true; break;
+                        case KEYCODE_POWER_CLEAR: key_ESCAPE = true; break;
+                    }
+                } else if (event.data.key.direction == KEY_RELEASED) {
+                    switch(event.data.key.keyCode) {
+                        case KEYCODE_4: key_left = false; break;
+                        case KEYCODE_6: key_right = false; break;
+                        case KEYCODE_8: key_up = false; break;
+                        case KEYCODE_2: key_down = false; break;
+                        case KEYCODE_9: key_r = false; break;
+                        case KEYCODE_3: key_f = false; break;
+                        case KEYCODE_PLUS: key_1 = false; break;
+                        case KEYCODE_MINUS: key_2 = false; break;
+                        case KEYCODE_0: key_e = false; break;
+                        case KEYCODE_LEFT: key_a = false; break;
+                        case KEYCODE_RIGHT: key_d = false; break;
+                        case KEYCODE_UP: key_w = false; break;
+                        case KEYCODE_DOWN: key_s = false; break;
+                        case KEYCODE_POWER_CLEAR: key_ESCAPE = false; break;
+                    }
                 }
             }
         }
