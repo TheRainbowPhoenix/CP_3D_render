@@ -1,15 +1,15 @@
-#include "RenderUtils.hpp"
+#include "RenderUtils.h"
 
-#include "Fix16_Utils.hpp"
+#include "Fix16_Utils.h"
 
-#include "Utils.hpp"
+#include "Utils.h"
 
-#include "constants.hpp"
+#include "constants.h"
 
 #ifndef PC
-#   include <sdk/calc/calc.hpp>
+#   include <sdk/calc/calc.h>
 #else
-#   include "PC_SDL_screen.hpp" // replaces "sdk/os/lcd.hpp"
+#   include "PC_SDL_screen.h" // replaces "sdk/os/lcd.h"
 #endif
 
 // Light intensity range 1.0f - MIN_LIGHT_INTENSITY

@@ -1,9 +1,9 @@
 #ifdef PC
 // Include guard PC
 
-#include "PC_SDL_screen.hpp"
+#include "PC_SDL_screen.h"
 
-#include "constants.hpp"
+#include "constants.h"
 
 #include <cstring>  // memset
 #include <iostream> // std::string

@@ -1,10 +1,10 @@
-#include "StringUtils.hpp"
+#include "StringUtils.h"
 
 #ifndef PC
-#   include <sdk/os/file.hpp>
-#   include <sdk/os/mem.hpp>
-#   include <sdk/os/lcd.hpp>
-#   include <sdk/os/debug.hpp>
+#   include <sdk/os/file.h>
+#   include <string.h>
+#   include <sdk/os/lcd.h>
+#   include <sdk/os/debug.h>
 #else
 #   include <SDL2/SDL.h>
 #   include <iostream>

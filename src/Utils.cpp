@@ -1,4 +1,4 @@
-#include "Utils.hpp"
+#include "Utils.h"
 
 void bubble_sort(uint_fix16_t a[], int n) {
     for (int j = n; j > 1; --j)

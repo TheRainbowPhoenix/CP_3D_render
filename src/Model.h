@@ -1,7 +1,8 @@
 #pragma once
 
 // TODO: Make separate file for fix16 vectors instead. . .
-#include "RenderFP3D.hpp"
+#include "RenderFP3D.h"
+#include <stdint.h>
 
 struct u_pair {
     unsigned First;
@@ -24,7 +25,11 @@ private:
 
 public:
 
-    Model(char* fname, char* ftexture, bool centerVertices);
+    #ifdef PC
+    Model(const char* fname, const char* ftexture, bool centerVertices);
+#else
+    Model(const char16_t* fname, const char16_t* ftexture, bool centerVertices);
+#endif
     ~Model();
 
     fix16_vec3 position;
@@ -53,7 +58,11 @@ public:
     uint16_t render_mode;
 
     // Run obj through python script to generate binary format
-    bool load_from_binary_obj_file(char* fname, char* ftexture, bool center=true);
+    #ifdef PC
+    bool load_from_binary_obj_file(const char* fname, const char* ftexture, bool center=true);
+#else
+    bool load_from_binary_obj_file(const char16_t* fname, const char16_t* ftexture, bool center=true);
+#endif
 
     // Scale raw model vertices
     void _scaleModel(Fix16 factor);

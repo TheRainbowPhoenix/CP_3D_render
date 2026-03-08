@@ -3,7 +3,7 @@
 #include "libfixmath/fix16.hpp"
 
 // TODO: Only needed for structs fix16_vec3. Move these somewhere else...
-#include "RenderFP3D.hpp"
+#include "RenderFP3D.h"
 
 Fix16 calculateDistance(const fix16_vec3& v1, const fix16_vec3& v2);
 fix16_vec3 crossProduct(const fix16_vec3& a, const fix16_vec3& b);

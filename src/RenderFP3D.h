@@ -1,6 +1,7 @@
 #pragma once
 
 #include "libfixmath/fix16.hpp"
+#include <stdint.h>
 
 struct int16_t_vec2
 {

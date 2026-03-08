@@ -1,14 +1,14 @@
-#include "Model.hpp"
+#include "Model.h"
 
-#include "StringUtils.hpp"
+#include "StringUtils.h"
 
-#include "constants.hpp"
+#include "constants.h"
 
 #ifndef PC
-#   include <sdk/os/file.hpp>
-#   include <sdk/os/mem.hpp>
-#   include <sdk/os/debug.hpp>
-#   include <sdk/os/lcd.hpp>
+#   include <sdk/os/file.h>
+#   include <string.h>
+#   include <sdk/os/debug.h>
+#   include <sdk/os/lcd.h>
 #else
 #   include <SDL2/SDL.h>
 #   include <iostream>
@@ -31,8 +31,8 @@ Model::~Model()
 }
 
 Model::Model(
-    char* fname,
-    char* ftexture,
+    const char* fname,
+    const char* ftexture,
     bool centerVertices
 ) : loaded_from_file(false),
     position({0.0f, 0.0f, 0.0f}), rotation({0.0f, 0.0f}), scale({1.0f,1.0f,1.0f}),
@@ -123,11 +123,19 @@ void Model::_scaleModelTo(Fix16 maxWidth)
 }
 
 // Scale raw model vertices
-bool Model::load_from_binary_obj_file(char* fname, char* ftexture, bool center)
+#ifdef PC
+bool Model::load_from_binary_obj_file(const char* fname, const char* ftexture, bool center)
+#else
+bool Model::load_from_binary_obj_file(const char16_t* fname, const char16_t* ftexture, bool center)
+#endif
 {
     // ~~~~~~~~~~~~~~~~~~~~~ Object ~~~~~~~~~~~~~~~~~~~~~
 
+    #ifdef PC
     int fd = open(fname, UNIVERSIAL_FILE_READ );
+#else
+    int fd = open((const char_const16_t*)fname, UNIVERSIAL_FILE_READ );
+#endif
     char buff[32] = {0};
 
     read(fd, buff, 31);
@@ -199,7 +207,11 @@ bool Model::load_from_binary_obj_file(char* fname, char* ftexture, bool center)
     }
 
     // Now load
-    fd = open(ftexture, UNIVERSIAL_FILE_READ);
+    #ifdef PC
+        fd = open(ftexture, UNIVERSIAL_FILE_READ);
+#else
+        fd = open((const char_const16_t*)ftexture, UNIVERSIAL_FILE_READ);
+#endif
     memset(buff, 0, 32);
     read(fd, buff, 31);
     uint32_t tex_size_x = *((uint32_t*)(buff+0));

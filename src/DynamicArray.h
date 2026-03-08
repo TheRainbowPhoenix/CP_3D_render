@@ -3,7 +3,7 @@
 // malloc & free based dynamically sized array
 
 #ifndef PC
-#   include <sdk/os/mem.hpp>
+#   include <string.h>
 #else
 #   include <cstdlib>
 #   include <iostream>

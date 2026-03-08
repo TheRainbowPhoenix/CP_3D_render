@@ -1,4 +1,4 @@
-// fps_functions.hpp by InterChan
+// fps_functions.h by InterChan
 
 // In main loop add "fps_update();" which updates the variable fps10
 // The int "fps10" represents the fps to one decimal place, except without the decimal point so 14.2 is just 142
@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <sdk/os/string.hpp>
-#include <sdk/os/debug.hpp>
+#include <sdk/os/string.h>
+#include <sdk/os/debug.h>
 
 uint8_t *R64CNT = (uint8_t*)0xA413FEC0;
 uint8_t prevtime = 0;
@@ -39,5 +39,5 @@ void fps_formatted_update() {
 }
 
 inline void fps_display() {
-    Debug_Printf(0,0,false,0,fps_formatted);
+    Debug_PrintString(fps_formatted, false);
 }
