@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include <stdlib.h>
 
 #include "Utils.h"
 
@@ -43,11 +44,7 @@ DynamicArray<Pair<Model*, Fix16>>& Renderer::getModelArray()
 }
 
 // If model has no texture, set it as NO_TEXTURE
-#ifdef PC
 Model* Renderer::addModel(const char* model_path, const char* texture_path, bool centerVertices)
-#else
-Model* Renderer::addModel(const char16_t* model_path, const char16_t* texture_path, bool centerVertices)
-#endif
 {
     // Create new object
     auto m = new Model(model_path, texture_path, centerVertices);

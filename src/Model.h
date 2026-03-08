@@ -25,11 +25,7 @@ private:
 
 public:
 
-    #ifdef PC
     Model(const char* fname, const char* ftexture, bool centerVertices);
-#else
-    Model(const char16_t* fname, const char16_t* ftexture, bool centerVertices);
-#endif
     ~Model();
 
     fix16_vec3 position;
@@ -58,11 +54,7 @@ public:
     uint16_t render_mode;
 
     // Run obj through python script to generate binary format
-    #ifdef PC
     bool load_from_binary_obj_file(const char* fname, const char* ftexture, bool center=true);
-#else
-    bool load_from_binary_obj_file(const char16_t* fname, const char16_t* ftexture, bool center=true);
-#endif
 
     // Scale raw model vertices
     void _scaleModel(Fix16 factor);

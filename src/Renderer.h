@@ -42,11 +42,7 @@ public:
 
     DynamicArray<Pair<Model*, Fix16>>& getModelArray();
     // If model has no texture, set as NO_TEXTURE
-    #ifdef PC
     Model* addModel(const char* model_path, const char* texture_path, bool centerVertices=true);
-#else
-    Model* addModel(const char16_t* model_path, const char16_t* texture_path, bool centerVertices=true);
-#endif
     unsigned int getModelCount();
 
     void update(int16_t_vec2* bbox_max, int16_t_vec2* bbox_min);

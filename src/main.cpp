@@ -116,6 +116,9 @@ int custom_init(SDL_Window **window, SDL_Renderer **sdl_renderer, SDL_Texture **
 #ifndef PC
 int main(int argc, char **argv, char **envp)
 {
+    (void)argc;
+    (void)argv;
+    (void)envp;
     int init_status = custom_init();
     if (init_status != 0) return -1;
 #else // ifdef PC
@@ -152,9 +155,9 @@ int main(int argc, const char * argv[])
     const char *model1_texture_path = "./3D_Converted_Models/little_endian_pika.texture";
     const char *model2_path = "./3D_Converted_Models/little_endian_cube.pkObj";
 #else
-    const char16_t *model1_path __attribute__((aligned(4))) = u"\\fls0\\big_endian_pika.pkObj";
-    const char16_t *model1_texture_path __attribute__((aligned(4))) = u"\\fls0\\big_endian_pika.texture";
-    const char16_t *model2_path __attribute__((aligned(4))) = u"\\fls0\\big_endian_cube.pkObj";
+    const char *model1_path = "/usr/fls0/big_endian_pika.pkObj";
+    const char *model1_texture_path = "/usr/fls0/big_endian_pika.texture";
+    const char *model2_path = "/usr/fls0/big_endian_cube.pkObj";
 #endif
 
     fillScreen(FILL_SCREEN_COLOR);
@@ -241,8 +244,8 @@ int main(int argc, const char * argv[])
 #ifndef PC
         struct Input_Event event __attribute__((aligned(4)));
         while(GetInput(&event, 0, 0x10) == 0) {
-            if (event.type == InputEventType_KeyDown) {
-                switch(event.scancode) {
+            if (event.type == Input_EventType_KeyDown) {
+                switch(event.data.keydown.scancode) {
                     case KEYCODE_4: key_left = true; break;
                     case KEYCODE_6: key_right = true; break;
                     case KEYCODE_8: key_up = true; break;
@@ -258,8 +261,8 @@ int main(int argc, const char * argv[])
                     case KEYCODE_DOWN: key_s = true; break;
                     case KEYCODE_POWER_CLEAR: key_ESCAPE = true; break;
                 }
-            } else if (event.type == InputEventType_KeyUp) {
-                switch(event.scancode) {
+            } else if (event.type == Input_EventType_KeyUp) {
+                switch(event.data.keydown.scancode) {
                     case KEYCODE_4: key_left = false; break;
                     case KEYCODE_6: key_right = false; break;
                     case KEYCODE_8: key_up = false; break;
@@ -513,7 +516,7 @@ int main(int argc, const char * argv[])
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #ifndef PC
-    calcEnd(); //restore screen and do stuff
+
     return 0;
 #else
     // End program without leaking memory
