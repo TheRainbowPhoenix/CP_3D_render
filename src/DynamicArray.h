@@ -2,10 +2,10 @@
 
 // malloc & free based dynamically sized array
 
-#ifndef PC
-#   include <string.h>
-#else
-#   include <cstdlib>
+#include <stdlib.h>
+#include <string.h>
+
+#ifdef PC
 #   include <iostream>
 #endif
 
@@ -43,7 +43,7 @@ public:
             return true; // Consider it as success
 
         // Create new array
-        T* newArray = static_cast<T*>(malloc(newCapacity * sizeof(T)));
+        T* newArray = static_cast<T*>(::malloc(newCapacity * sizeof(T)));
         if (!newArray)
             return false;
 
@@ -52,7 +52,7 @@ public:
             for (unsigned int i = 0; i < size; ++i)
                 newArray[i] = array[i];
             // Free the old array
-            free(array);
+            ::free(array);
         }
 
         // Assign new array
@@ -81,7 +81,7 @@ public:
     {
         // Free the dynamically allocated memory
         if (array) {
-            free(array);
+            ::free(array);
         }
     }
 };
